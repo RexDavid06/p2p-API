@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from uuid import uuid4
+from wallets.models import Wallet
 
 User=settings.AUTH_USER_MODEL
 
@@ -26,4 +27,17 @@ class Transaction(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class LedgerEntry(models.Model):
+    ENTRY_TYPE = (
+        ("DEBIT", "Debit"),
+        ("CREDIT", "Credit"),
+    )
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    wallet = models.ForeignKey(Wallet, on_delete=models.PROTECT)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    entry_type = models.CharField(max_length=6, choices=ENTRY_TYPE)
+    date_created = models.DateTimeField(auto_now_add=True)
+    
 
